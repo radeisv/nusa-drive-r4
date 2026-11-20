@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nusa Drive — Kota Nusa</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="./style.css">
+<script type="importmap">
+{ "imports": { "three": "./vendor/three.module.min.js" } }
+</script>
+</head>
+<body>
+<div id="game"></div>
+
+<!-- ============ HUD ============ -->
+<div id="hud" class="hidden">
+  <!-- top-left: mission panel -->
+  <div id="mission-panel" class="panel">
+    <div id="mission-chapter">CHAPTER 1 &middot; FIRST LIGHT</div>
+    <div id="mission-title">MEET SINTA AT THE PIER</div>
+    <div id="mission-stage"><span id="mission-stage-fill"></span></div>
+    <div id="mission-stage-label">STAGE 1/4</div>
+    <div id="mission-objective">Drive to the yellow marker on Pantai Boulevard</div>
+    <div id="mission-next">NEXT &nbsp;Talk to Sinta</div>
+    <div id="mission-timer">--:--</div>
+  </div>
+
+  <!-- top-centre: wanted -->
+  <div id="wanted-box">
+    <div id="wanted-label">WANTED</div>
+    <div id="wanted-stars">☆☆☆☆☆</div>
+    <div id="wanted-status">CLEAN</div>
+  </div>
+
+  <!-- top-right: cash, clock, respect -->
+  <div id="cash-box">
+    <div id="clock">18:40</div>
+    <div id="cash">$12,480</div>
+    <div id="respect-bar"><span id="respect-fill"></span></div>
+    <div id="respect-label">STREET KID &nbsp; 140 / 400 RP</div>
+  </div>
+
+  <!-- left: police response -->
+  <div id="police-panel" class="panel hidden">
+    <div class="panel-head">POLISI NUSA RESPONSE <span id="police-count">0 UNITS</span></div>
+    <div id="police-list"></div>
+  </div>
+
+  <!-- right: weapons + crew -->
+  <div id="right-col">
+    <div id="weapon-slots"></div>
+    <div id="crew-cards"></div>
+  </div>
+
+  <!-- bottom-left: minimap + vitals -->
+  <div id="map-box">
+    <div id="location-name">PANTAI BOULEVARD</div>
+    <div id="location-sub">Kota Nusa &middot; Beachfront &middot; GRIP 82%</div>
+    <canvas id="minimap" width="220" height="220"></canvas>
+    <div id="vitals">
+      <div class="vital"><span>HEALTH</span><div class="bar"><span id="health-fill"></span></div><b id="health-num">100</b></div>
+      <div class="vital"><span>ARMOUR</span><div class="bar blue"><span id="armour-fill"></span></div><b id="armour-num">50</b></div>
+    </div>
+  </div>
+
+  <!-- bottom-centre: dialogue -->
+  <div id="dialogue" class="hidden">
+    <div id="dialogue-portrait">S</div>
+    <div id="dialogue-body">
+      <div id="dialogue-name">SINTA &middot; FIXER</div>
+      <div id="dialogue-text"></div>
+    </div>
+  </div>
+
+  <!-- bottom-right: speed + car -->
+  <div id="speed-box">
+    <div id="speed-num">0</div>
+    <div id="speed-unit">KM/H</div>
+    <div id="car-name">ON FOOT</div>
+    <div id="car-cond">CONDITION 100%</div>
+    <div id="nitro-bar"><span id="nitro-fill"></span></div>
+    <div id="radio-line">NUSA FM 98.4 &middot; Sunset Surf &mdash; Ombak Rindu</div>
+  </div>
+
+  <div id="crosshair" class="hidden">+</div>
+  <div id="toast"></div>
+  <div id="objective-flash"></div>
+  <div id="damage-vignette"></div>
+  <div id="hint">WASD drive / walk &middot; E enter car &middot; SPACE brake &middot; SHIFT nitro &middot; F punch / CLICK shoot &middot; 1-2 weapons &middot; M radio &middot; ESC menu</div>
+</div>
+
+<!-- ============ START SCREEN ============ -->
+<div id="start-screen">
+  <div id="start-inner">
+    <div id="start-kicker">KOTA NUSA &middot; AN OPEN-WORLD CRIME STORY</div>
+    <h1 id="start-title">NUSA<br>DRIVE</h1>
+    <p id="start-tag">Steal the car. Lose the heat. Own the island.</p>
+    <div id="start-buttons">
+      <button id="btn-continue">CONTINUE &mdash; DAY 3 &middot; $12,480</button>
+      <button id="btn-new">NEW GAME</button>
+      <button id="btn-how">HOW TO PLAY</button>
+    </div>
+    <div id="start-save">SAVE SLOT 1 &middot; 38% COMPLETE &middot; 1/4 MISSIONS &middot; 18:40</div>
+    <div id="start-controls">WASD move / drive &nbsp;&middot;&nbsp; E enter &amp; exit car &nbsp;&middot;&nbsp; SPACE handbrake &nbsp;&middot;&nbsp; SHIFT nitro &nbsp;&middot;&nbsp; MOUSE aim &nbsp;&middot;&nbsp; CLICK shoot &nbsp;&middot;&nbsp; 1 / 2 weapons &nbsp;&middot;&nbsp; M radio &nbsp;&middot;&nbsp; ESC pause &amp; save</div>
+    <div id="start-crew">
+      <div class="start-char"><b>R</b><span>RAKA &middot; DRIVER</span></div>
+      <div class="start-char"><b>S</b><span>SINTA &middot; FIXER</span></div>
+      <div class="start-char"><b>B</b><span>BAYU &middot; MECHANIC</span></div>
+      <div class="start-char"><b>K</b><span>KIKI &middot; LOOKOUT</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAUSE MENU ============ -->
+<div id="pause-menu" class="hidden">
+  <h2>PAUSED</h2>
+  <button id="btn-resume">RESUME</button>
+  <button id="btn-save">SAVE GAME</button>
+  <button id="btn-load">LOAD GAME</button>
+  <button id="btn-restart">RESTART DAY</button>
+  <div id="pause-info">NUSA DRIVE &middot; KOTA NUSA &middot; progress saves to this browser</div>
+</div>
+
+<div id="loading">LOADING KOTA NUSA&hellip;</div>
+<script type="module" src="./main.js"></script>
+</body>
+</html>
